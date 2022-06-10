@@ -1,37 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./styles.css";
+import { InputTodo } from "./components/inputTodo";
+import { IncompleteTodo } from "./components/incompleteTodo";
+import { CompleteTodo } from "./components/completeTodo";
 
 export const App = () => {
+  const [todoText, setTodoText] = useState("");
+  const [incompleteTodos, setIncompleteTodos] = useState([
+    "あああああ",
+    "いいいいい"
+  ]);
+  const [completeTodos, setCompleteTodos] = useState(["ううううう"]);
+
+  const onChangeTodoText = (event) => setTodoText(event.target.value);
+
+  const onClickAdd = () => {
+    if (todoText === "") return;
+    const newTodos = [...incompleteTodos, todoText];
+    setIncompleteTodos(newTodos);
+    setTodoText("");
+  };
+
+  const onClickDelete = (index) => {
+    const newTodos = [...incompleteTodos];
+    newTodos.splice(index, 1);
+    setIncompleteTodos(newTodos);
+  };
+
+  const onClickComplete = (index) => {
+    const newIncompleteTodos = [...incompleteTodos];
+    newIncompleteTodos.splice(index, 1);
+    const newCompleteTodos = [...completeTodos, incompleteTodos[index]];
+    setIncompleteTodos(newIncompleteTodos);
+    setCompleteTodos(newCompleteTodos);
+  };
+
+  const onClickBack = (index) => {
+    const newCompleteTodos = [...completeTodos];
+    newCompleteTodos.splice(index, 1);
+
+    const newIncompleteTodos = [...incompleteTodos, completeTodos[index]];
+    setCompleteTodos(newCompleteTodos);
+    setIncompleteTodos(newIncompleteTodos);
+  };
+
   return (
     <>
-      <div className="input-area">
-        <input placeholder="TODOを入力" />
-        <button>追加</button>
-      </div>
-      <div className="incomplete-area">
-        <p className="title">未完了のTODO</p>
-        <ul>
-          <div className="list-row">
-            <li>あああああ</li>
-            <button>完了</button>
-            <button>削除</button>
-          </div>
-          <div className="list-row">
-            <li>いいいいい</li>
-            <button>完了</button>
-            <button>削除</button>
-          </div>
-        </ul>
-      </div>
-      <div className="complete-area">
-        <p className="title">完了のTODO</p>
-        <ul>
-          <div className="list-row">
-            <li>ううううう</li>
-            <button>戻す</button>
-          </div>
-        </ul>
-      </div>
+      <InputTodo
+        todoText={todoText}
+        onChange={onChangeTodoText}
+        onClick={onClickAdd}
+      />
+      <IncompleteTodo
+        todo={incompleteTodos}
+        onClickComplete={onClickComplete}
+        onClickDelete={onClickDelete}
+      />
+      <CompleteTodo todo={completeTodos} onClickBack={onClickBack} />
     </>
   );
 };
